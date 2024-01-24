@@ -1,24 +1,22 @@
 import time
 import asyncio
-
-from playwright.sync_api import Playwright, sync_playwright, expect
-from time import sleep
+from playwright.async_api import async_playwright
 
 
-async def run(playwright: Playwright):
-    browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context()
-    page = context.new_page()
-    page.goto("https://comgas.service-now.com/comgas_itsm?id=sc_cat_item&sys_id=29f7a3bb1b027890fa2442ece54bcb5a")
+async def main():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=False)
+        page = await browser.new_page()
+        await page.goto("http://playwright.dev")
+        print(await page.title())
+        await browser.close()
 
-    storage = context.storage_state(path="state.json")
+asyncio.run(main())
 
-    await browser.close()
+# TODO - Implement user authentication with all the time needed for finishing, then storages cookies.
+# # Save storage state into the file.
+# storage = await context.storage_state(path="state.json")
+#
+# # Create a new context with the saved storage state.
+# context = await browser.new_context(storage_state="state.json")
 
-    # ---------------------
-    # context.close()
-    # browser.close()
-
-
-with sync_playwright() as playwright:
-    run(playwright)
